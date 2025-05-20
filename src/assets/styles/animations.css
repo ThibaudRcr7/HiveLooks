@@ -1,0 +1,110 @@
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
+.scroll-banner {
+  width: 200%;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  opacity: 0;
+  transform: translateY(50px);
+  --slide-delay: 0s;
+}
+
+.slide-up.visible {
+  animation: slideUp 0.8s ease-out forwards;
+  animation-delay: var(--slide-delay);
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.hanging-rectangle {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  top: 0px;
+  transform-origin: top center;
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.hanging-rectangle.visible {
+  animation: slideInFromRight 1s ease-out forwards;
+}
+
+.hanging-rectangle:nth-child(1) {
+  left: calc(10% - 60px);
+  animation-delay: 0.2s;
+}
+
+.hanging-rectangle:nth-child(2) {
+  left: calc(40% - 60px);
+  animation-delay: 0.4s;
+}
+
+.hanging-rectangle:nth-child(3) {
+  left: calc(75% - 60px);
+  animation-delay: 0.6s;
+}
+
+.floating-ball {
+  width: 24px;
+  height: 24px;
+  background-color: #FF90BD;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+  border: 2px solid #111111;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translate(-50%, -50%);
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-10px); }
+}
+
+.hover\:floating-ball-left:hover ~ .floating-ball {
+  left: 35% !important;
+}
+
+.hover\:floating-ball-right:hover ~ .floating-ball {
+  left: 65% !important;
+}
+
+.group:hover .floating-ball {
+  transform: translate(-50%, -50%) scale(1.2);
+}
