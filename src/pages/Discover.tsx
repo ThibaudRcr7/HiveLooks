@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
 import { getAllPosts, Post as PostType, deletePost } from '../firebase/posts';
+import { getAllLooks, Look as LookType } from '../firebase/looks';
 import Post from '../components/Post';
+import Look from '../components/Look';
 import { toast } from 'react-hot-toast';
 
 const Discover = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
+  const [looks, setLooks] = useState<LookType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchContent = async () => {
       try {
-        const fetchedPosts = await getAllPosts();
+        const [fetchedPosts, fetchedLooks] = await Promise.all([
+          getAllPosts(),
+          getAllLooks()
+        ]);
         setPosts(fetchedPosts);
+        setLooks(fetchedLooks);
       } catch (error) {
         console.error('Erreur lors de la récupération des posts:', error);
         toast.error('Une erreur est survenue lors du chargement des posts');
@@ -21,17 +28,17 @@ const Discover = () => {
       }
     };
 
-    fetchPosts();
+    fetchContent();
   }, []);
 
-  const filteredPosts = posts.filter(post => {
-    const title = post.title ?? '';
-    const description = post.description ?? '';
-    const search = searchQuery ?? '';
+  const filteredContent = [...posts, ...looks].filter(item => {
+    const title = 'title' in item ? item.title : item.question;
+    const description = 'description' in item ? item.description : item.details;
+    const search = searchQuery.toLowerCase();
     
-    return title.toLowerCase().includes(search.toLowerCase()) ||
-           description.toLowerCase().includes(search.toLowerCase());
-  });
+    return title.toLowerCase().includes(search) ||
+           description.toLowerCase().includes(search);
+  }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   if (loading) {
     return (
@@ -94,9 +101,13 @@ const Discover = () => {
         </div>
 
         <div className="grid gap-8">
-          {filteredPosts.length > 0 ? (
-            filteredPosts.map((post) => (
-              <Post key={post.id} post={post} />
+          {filteredContent.length > 0 ? (
+            filteredContent.map((item) => (
+              'question' in item ? (
+                <Post key={item.id} post={item as PostType} />
+              ) : (
+                <Look key={item.id} look={item as LookType} />
+              )
             ))
           ) : (
             <div className="text-center py-8">

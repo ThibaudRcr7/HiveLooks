@@ -35,6 +35,7 @@ const CreatePost = () => {
       setLoading(true);
       const postData = {
         ...formData,
+        style: formData.style.startsWith('#') ? formData.style : `#${formData.style.trim()}`,
         userId: currentUser.uid,
         createdAt: serverTimestamp(),
         likes: []
@@ -121,8 +122,8 @@ const CreatePost = () => {
               <input
                 type="text"
                 id="style"
-                value={formData.style}
-                onChange={(e) => setFormData(prev => ({ ...prev, style: e.target.value }))}
+                value={formData.style.startsWith('#') ? formData.style.substring(1) : formData.style}
+                onChange={(e) => setFormData(prev => ({ ...prev, style: e.target.value.trim() }))}
                 className="block w-full pl-8 pr-3 py-2 rounded-xl border-2 border-hive-black shadow-sm focus:ring-2 focus:ring-hive-pink focus:border-hive-pink"
                 placeholder="vintage"
                 required

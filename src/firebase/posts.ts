@@ -13,8 +13,9 @@ export interface Comment {
 export interface Post {
   id?: string;
   userId: string;
-  title: string;
-  description: string;
+  question: string;
+  details: string;
+  style: string;
   imageUrl: string;
   createdAt: Date;
   likes: string[];

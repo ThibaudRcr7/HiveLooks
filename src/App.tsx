@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import CreatePost from './pages/CreatePost';
+import CreateLook from './pages/CreateLook';
 import Discover from './pages/Discover';
 import Presentation from './pages/Presentation';
 import NotFound from './pages/NotFound';
@@ -26,6 +27,7 @@ const App: FC = () => {
             <Route path="/connexion" element={<Login />} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
             <Route path="/creer-post" element={<PrivateRoute><CreatePost /></PrivateRoute>} />
+            <Route path="/creer-look" element={<PrivateRoute><CreateLook /></PrivateRoute>} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/presentation" element={<Presentation />} />
             <Route path="*" element={<NotFound />} />

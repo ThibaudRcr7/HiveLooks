@@ -5,7 +5,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  photoURL?: string;
+  photoURL: string | null;
   createdAt: Date;
   bio?: string;
 }
@@ -18,11 +18,12 @@ export * from './clothing';
 export interface Post {
   id: string;
   userId: string;
-  title: string;
-  description: string;
+  question: string;
+  details: string;
+  style: string;
   imageUrl?: string;
   wardrobeItems?: string[];  // IDs des vêtements associés
-  likes: number;
+  likes: string[];
   comments: Comment[];
   createdAt: Date;
   updatedAt?: Date;

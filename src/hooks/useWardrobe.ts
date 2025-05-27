@@ -23,31 +23,26 @@ export const useWardrobe = (): WardrobeHook => {
     let isMounted = true;
     const loadWardrobeItems = async () => {
       if (!user) {
-        console.log("Aucun utilisateur connecté, réinitialisation de la garde-robe");
         setWardrobeItems([]);
         setIsLoading(false);
         return;
       }
 
       if (!user.uid) {
-        console.warn("❌ userId non défini dans useWardrobe");
         setError(new Error("Impossible de charger la garde-robe : utilisateur non identifié"));
         setIsLoading(false);
         return;
       }
 
-      console.log("userId envoyé à Firestore:", user.uid);
       setIsLoading(true);
 
       try {
-        setError(null); // Réinitialiser les erreurs précédentes
+        setError(null);
         const items = await getWardrobeItems(user.uid);
-        console.log("Contenu wardrobeItems:", items);
         if (isMounted) {
           setWardrobeItems(items);
         }
       } catch (err) {
-        console.error("Erreur dans useWardrobe:", err);
         if (isMounted) {
           setError(err instanceof Error ? err : new Error('Erreur lors du chargement de la garde-robe. Veuillez réessayer.'));
           setWardrobeItems([]); // Réinitialiser les items en cas d'erreur
@@ -89,7 +84,6 @@ export const useWardrobe = (): WardrobeHook => {
 
       setWardrobeItems(prev => [...prev, newItem]);
     } catch (err) {
-      console.error('Erreur lors de l\'ajout du vêtement:', err);
       setError(err instanceof Error ? err : new Error('Erreur lors de l\'ajout du vêtement'));
       throw err;
     }
@@ -116,7 +110,7 @@ export const useWardrobe = (): WardrobeHook => {
         )
       );
     } catch (error) {
-      console.error('Erreur lors de la modification du vêtement:', error);
+      setError(error instanceof Error ? error : new Error('Erreur lors de la modification du vêtement'));
       throw error;
     }
   };

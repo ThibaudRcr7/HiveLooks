@@ -1,12 +1,9 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from './firebase-config';
 
-export interface User {
-  uid: string;
-  username: string;
-  email: string;
-  createdAt: Date;
-}
+import { User as UserType } from '../types';
+
+export type User = Omit<UserType, 'id'> & { uid: string };
 
 /**
  * Crée un nouveau profil utilisateur dans Firestore
@@ -29,13 +26,17 @@ export const createUserProfile = async (uid: string, username: string, email: st
 /**
  * Récupère les informations d'un utilisateur
  */
-export const getUserProfile = async (uid: string): Promise<User | null> => {
+export const getUserProfile = async (uid: string): Promise<UserType | null> => {
   try {
     const userRef = doc(firestore, 'users', uid);
     const userDoc = await getDoc(userRef);
     
     if (userDoc.exists()) {
-      return userDoc.data() as User;
+      const userData = userDoc.data() as User;
+      return {
+        ...userData,
+        id: userData.uid
+      };
     }
     
     return null;
@@ -48,7 +49,7 @@ export const getUserProfile = async (uid: string): Promise<User | null> => {
 /**
  * Met à jour le profil d'un utilisateur
  */
-export const updateUserProfile = async (uid: string, data: Partial<User>): Promise<void> => {
+export const updateUserProfile = async (uid: string, data: Partial<UserType>): Promise<void> => {
   try {
     const userRef = doc(firestore, 'users', uid);
     await updateDoc(userRef, data);

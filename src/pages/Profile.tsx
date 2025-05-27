@@ -5,11 +5,13 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/firebase-config';
 import ProfileCard from '../components/ui/ProfileCard';
 import WardrobeTab from '../components/tabs/WardrobeTab';
-import LooksTab from '../components/tabs/LooksTab';
+import LooksTab from '../components/LooksTab';
 import PostsTab from '../components/tabs/PostsTab';
 import { useWardrobe } from '../hooks/useWardrobe';
 import { getUserProfile, updateUserProfile } from '../firebase/users';
 import { toast } from 'react-hot-toast';
+import EditProfileModal from '../components/modals/EditProfileModal';
+import { User } from '../types';
 
 const Profile: FC = () => {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const Profile: FC = () => {
   const [selectedTab, setSelectedTab] = useState<'wardrobe' | 'looks' | 'posts'>('wardrobe');
   const [username, setUsername] = useState('');
   const [postsCount, setPostsCount] = useState(0);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const { wardrobeItems } = useWardrobe();
   const location = useLocation();
 
@@ -31,21 +35,50 @@ const Profile: FC = () => {
   }, [location]);
 
   useEffect(() => {
-    const fetchUsername = async () => {
+    const fetchUserProfile = async () => {
       if (!user) return;
       try {
-        const userProfile = await getUserProfile(user.uid);
-        if (userProfile) {
-          setUsername(userProfile.username);
+        const profile = await getUserProfile(user.uid);
+        if (profile) {
+          const userProfileData: User = {
+            ...profile,
+            id: profile.id
+          };
+          setUserProfile(userProfileData);
+          setUsername(profile.username);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du pseudo:', error);
-        toast.error('Erreur lors de la récupération du pseudo');
+        console.error('Erreur lors de la récupération du profil:', error);
+        toast.error('Erreur lors de la récupération du profil');
       }
     };
 
-    fetchUsername();
+    fetchUserProfile();
   }, [user]);
+
+  const handleEditProfile = async (data: { username: string; bio: string; photoURL: string }) => {
+    if (!user) return;
+
+    try {
+      await updateUserProfile(user.uid, {
+        username: data.username,
+        bio: data.bio,
+        photoURL: data.photoURL
+      });
+
+      // Mise à jour du state local
+      setUserProfile(prev => prev ? {
+        ...prev,
+        username: data.username,
+        bio: data.bio,
+        photoURL: data.photoURL
+      } : null);
+      setUsername(data.username);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error);
+      throw error;
+    }
+  };
 
 
 
@@ -66,11 +99,21 @@ const Profile: FC = () => {
         <div className="flex flex-col items-center gap-8">
           <ProfileCard
             name={username || user?.email?.split('@')[0] || 'Utilisateur'}
-            bio="Bienvenue sur mon profil HiveLooks ! Je suis passionné(e) par la mode et le style."
-            imageSrc="/images/default-avatar.svg"
+            bio={userProfile?.bio || "Bienvenue sur mon profil HiveLooks ! Je suis passionné(e) par la mode et le style."}
+            imageSrc={userProfile?.photoURL || "/images/default-avatar.svg"}
             buttonText="Se déconnecter"
             onButtonClick={handleLogout}
+            onEditClick={() => setIsEditProfileModalOpen(true)}
           />
+
+          {userProfile && (
+            <EditProfileModal
+              isOpen={isEditProfileModalOpen}
+              onClose={() => setIsEditProfileModalOpen(false)}
+              user={userProfile}
+              onSubmit={handleEditProfile}
+            />
+          )}
 
           {showAccountInfo && (
             <div className="w-[400px] bg-white rounded-lg border-2 border-black shadow-[4px_4px_0_#000000] p-6 space-y-4">
@@ -138,7 +181,7 @@ const Profile: FC = () => {
           {/* Contenu des onglets avec transition */}
           <div className="w-full animate-fadeIn">
             {selectedTab === 'wardrobe' && <WardrobeTab />}
-            {selectedTab === 'looks' && <LooksTab />}
+            {selectedTab === 'looks' && user && <LooksTab userId={user.uid} />}
             {selectedTab === 'posts' && <PostsTab onPostsCountChange={setPostsCount} />}
           </div>
         </div>

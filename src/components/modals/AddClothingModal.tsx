@@ -1,20 +1,21 @@
 import React from 'react';
 import { Dialog } from '@headlessui/react';
 import { uploadImageToCloudinary } from '../../utils/cloudinary';
+import { ClothingCategory } from '../../types/clothing';
 
 interface AddClothingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; category: string; imageUrl: string; userId: string }) => void;
+  onSubmit: (data: { name: string; category: ClothingCategory; imageUrl: string; userId: string }) => void;
 }
 
 const CLOTHING_CATEGORIES = [
-  'Hauts',
-  'Bas',
-  'Robes',
-  'Vestes',
-  'Chaussures',
-  'Accessoires'
+  ClothingCategory.TOPS,
+  ClothingCategory.BOTTOMS,
+  ClothingCategory.DRESSES,
+  ClothingCategory.OUTERWEAR,
+  ClothingCategory.SHOES,
+  ClothingCategory.ACCESSORIES
 ];
 
 const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, onSubmit }) => {
@@ -105,7 +106,7 @@ const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, on
               <label className="block text-sm font-bold uppercase mb-2">Catégorie:</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => setCategory(e.target.value as ClothingCategory)}
                 className="w-full px-3 py-2 rounded-lg border-2 border-black focus:outline-none focus:border-pink-500"
               >
                 {CLOTHING_CATEGORIES.map((cat) => (

@@ -23,7 +23,11 @@ export const uploadImageToCloudinary = async (file: File): Promise<string> => {
     });
 
     const result = await response.json();
-    console.log("Réponse Cloudinary:", result);
+    console.log("Upload Cloudinary réussi:", {
+      url: result.secure_url,
+      format: result.format,
+      size: Math.round(result.bytes / 1024) + 'KB'
+    });
 
     if (!response.ok) {
       throw new Error(`Échec de l'upload: ${result?.error?.message || 'Erreur inconnue'}`);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WardrobeItem } from '../../firebase/firestore';
+import { WardrobeItem } from '../../types/clothing';
 import AddClothingModal from '../modals/AddClothingModal';
 import WardrobeItemModal from '../modals/WardrobeItemModal';
 import EditWardrobeItemModal from '../modals/EditWardrobeItemModal';
@@ -29,7 +29,7 @@ const WardrobeTab: React.FC = () => {
       <div className="flex justify-end px-4">
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-pink-500 text-white font-medium rounded-lg border-2 border-black shadow-[0_4px_0_#000000] px-4 py-2 hover:translate-y-[2px] hover:shadow-none transition-all duration-200 flex items-center gap-2"
+          className="bg-hive-pink text-black font-bold rounded-lg border-2 border-hive-black shadow-[0_3px_0_0_#111111] px-4 py-2 hover:translate-y-[3px] hover:shadow-none transition-all duration-200 flex items-center gap-2"
         >
           <span>Ajouter un vêtement</span>
         </button>

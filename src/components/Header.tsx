@@ -45,7 +45,7 @@ const Header = () => {
         <div className="flex items-center gap-8">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="block lg:hidden p-2 bg-hive-pink rounded-lg border-[1px] border-[#111111] shadow-[4px_4px_0_#111] text-hive-black transition-all duration-200 hover:translate-y-[4px] hover:shadow-none order-last"
+            className="block lg:hidden p-2 bg-hive-pink rounded-lg border-[1px] border-[#111111] shadow-[0_3px_0_0_#111111] text-hive-black transition-all duration-200 hover:translate-y-[3px] hover:shadow-none order-last"
             aria-label="Menu de navigation"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
