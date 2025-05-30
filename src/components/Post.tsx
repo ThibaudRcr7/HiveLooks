@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Post as PostType, Comment, addComment, toggleCommentLike, updatePost, deletePost } from '../firebase/posts';
 import { toast } from 'react-hot-toast';
-import { collection, onSnapshot, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase-config';
 import { Menu } from '@headlessui/react';
 import { getUserProfile } from '../firebase/users';
@@ -271,11 +271,11 @@ const Post = ({ post }: PostProps) => {
                   </div>
                   <button
                     onClick={() => handleLikeComment(comment.id)}
-                    className="flex items-center gap-1 text-gray-500 hover:text-red-500"
+                    className="flex items-center gap-1"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5"
+                      className={`w-5 h-5 ${comment.likes?.includes(currentUser?.uid || '') ? 'text-[#FFAF02]' : 'text-gray-500'}`}
                       fill={comment.likes?.includes(currentUser?.uid || '') ? 'currentColor' : 'none'}
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -287,7 +287,9 @@ const Post = ({ post }: PostProps) => {
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                       />
                     </svg>
-                    <span>{comment.likes?.length || 0}</span>
+                    <span className={comment.likes?.includes(currentUser?.uid || '') ? 'text-[#FFAF02]' : 'text-gray-500'}>
+                      {comment.likes?.length || 0}
+                    </span>
                   </button>
                 </div>
                 <p className="text-gray-700 ml-14">{comment.content}</p>

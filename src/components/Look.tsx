@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Menu } from '@headlessui/react';
+import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
-import { Look as LookType, toggleLike } from '../firebase/looks';
+import { Look as LookType, toggleLike, updateLook, deleteLook } from '../firebase/looks';
 import { getUserProfile } from '../firebase/users';
-import { FaHeart } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
+
+
 
 interface LookProps {
   look: LookType;
@@ -15,6 +17,10 @@ const Look = ({ look }: LookProps) => {
   const [username, setUsername] = useState<string>('');
   const [userPhotoURL, setUserPhotoURL] = useState<string | null>(null);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(look.title);
+  const [editedDescription, setEditedDescription] = useState(look.description);
+  const [editedStyle, setEditedStyle] = useState(look.style || '');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -33,10 +39,6 @@ const Look = ({ look }: LookProps) => {
 
     fetchUserData();
   }, [look.userId]);
-
-  const toggleDetails = () => {
-    setIsDetailsExpanded(!isDetailsExpanded);
-  };
 
   const [liked, setLiked] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -75,47 +77,142 @@ const Look = ({ look }: LookProps) => {
       <div className="flex flex-col md:flex-row h-full overflow-x-hidden">
         <div className="flex-1 p-6 sm:p-8 flex flex-col overflow-x-hidden scrollbar-thin scrollbar-track-transparent">
           <div className="flex items-center gap-4 mb-6">
-            <Link to={`/profile/${look.userId}`} className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full border-2 border-hive-black overflow-hidden">
-                {userPhotoURL ? (
-                  <img
-                    src={userPhotoURL}
-                    alt={username}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-hive-pink" />
-                )}
-              </div>
-              <span className="text-lg font-piepie">{username}</span>
-            </Link>
+            <div className="flex items-center justify-between w-full">
+              <Link to={`/profile/${look.userId}`} className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full border-2 border-hive-black overflow-hidden">
+                  {userPhotoURL ? (
+                    <img
+                      src={userPhotoURL}
+                      alt={username}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-hive-pink" />
+                  )}
+                </div>
+                <span className="text-lg font-piepie">{username}</span>
+              </Link>
+              {currentUser && currentUser.uid === look.userId && (
+                <Menu as="div" className="relative ml-auto">
+                  <Menu.Button className="p-2 hover:bg-gray-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                    </svg>
+                  </Menu.Button>
+                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          className={`${active ? 'bg-gray-100' : ''} w-full text-left px-4 py-2 text-sm text-gray-700`}
+                        >
+                          Modifier
+                        </button>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={async () => {
+                            if (window.confirm('Êtes-vous sûr de vouloir supprimer ce look ?')) {
+                              try {
+                                await deleteLook(look.id!);
+                                toast.success('Look supprimé avec succès');
+                              } catch (error) {
+                                toast.error('Erreur lors de la suppression du look');
+                              }
+                            }
+                          }}
+                          className={`${active ? 'bg-gray-100' : ''} w-full text-left px-4 py-2 text-sm text-red-600`}
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Menu>
+              )}
+            </div>
           </div>
 
-          <h2 className="font-piepie text-2xl font-bold mb-6">
-            {look.title}
-          </h2>
+          {isEditing ? (
+            <div className="mb-6">
+              <input
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent font-piepie text-2xl"
+              />
+              <textarea
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent mb-4"
+                rows={4}
+              />
+              <input
+                type="text"
+                value={editedStyle}
+                onChange={(e) => setEditedStyle(e.target.value)}
+                placeholder="Style de la tenue"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent mb-4"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={async () => {
+                    try {
+                      await updateLook(look.id!, {
+                        title: editedTitle,
+                        description: editedDescription,
+                        style: editedStyle
+                      });
+                      setIsEditing(false);
+                      toast.success('Look modifié avec succès');
+                    } catch (error) {
+                      toast.error('Erreur lors de la modification du look');
+                    }
+                  }}
+                  className="px-4 py-2 bg-hive-purple text-white rounded-lg hover:bg-hive-purple-dark"
+                >
+                  Enregistrer
+                </button>
+                <button
+                  onClick={() => {
+                    setEditedTitle(look.title);
+                    setEditedDescription(look.description);
+                    setEditedStyle(look.style || '');
+                    setIsEditing(false);
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          ) : (
+            <h2 className="font-piepie text-2xl font-bold mb-6">
+              {look.title}
+            </h2>
+          )}
 
           <div className="flex-grow mb-6">
-            {look.description.length > 150 ? (
-              <>
-                <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">
-                  {isDetailsExpanded
-                    ? look.description
-                    : `${look.description.slice(0, 150)}...`}
-                </p>
-                <button
-                  onClick={toggleDetails}
-                  className="text-hive-pink hover:underline mt-4 text-lg font-medium"
-                >
-                  {isDetailsExpanded ? 'Afficher moins' : 'Afficher plus'}
-                </button>
-              </>
-            ) : (
-              <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">{look.description}</p>
-            )}
-            {look.style && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="text-hive-purple text-lg font-medium">#{look.style}</span>
+            <div className="flex items-center gap-2 text-gray-600 cursor-pointer" onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}>
+              <span className="text-base">{isDetailsExpanded ? 'Afficher moins' : 'Afficher plus'}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`w-5 h-5 transform transition-transform ${isDetailsExpanded ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            {isDetailsExpanded && (
+              <div className="mt-4">
+                <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">{look.description}</p>
+                {look.style && (
+                  <span className="inline-block mt-2 text-hive-purple text-lg font-medium">#{look.style}</span>
+                )}
               </div>
             )}
           </div>
@@ -127,8 +224,10 @@ const Look = ({ look }: LookProps) => {
                 className="focus:outline-none transform hover:scale-110 transition-transform duration-200"
                 disabled={!currentUser}
               >
-                <FaHeart 
-                  className={`text-2xl transition-colors duration-200 ${liked ? 'text-hive-pink' : 'text-gray-400'}`}
+                <img 
+                  src={`/src/assets/images/icons/${liked ? 'purple' : 'empty'}-like.svg`}
+                  alt={liked ? 'Unlike' : 'Like'}
+                  className="w-6 h-6"
                 />
               </button>
               <span className="text-gray-700 text-lg font-medium">{likeCount} Looks</span>
@@ -137,7 +236,7 @@ const Look = ({ look }: LookProps) => {
         </div>
 
         <div className="flex-1 relative overflow-hidden p-4">
-          <div className="w-full h-full relative rounded-2xl overflow-hidden">
+          <div className="w-full h-full relative rounded-2xl overflow-hidden border-2 border-hive-black">
             <img
               src={look.imageUrl}
               alt={look.title}

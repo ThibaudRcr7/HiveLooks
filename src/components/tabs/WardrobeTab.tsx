@@ -69,8 +69,8 @@ const WardrobeTab: React.FC = () => {
           setIsViewModalOpen(false);
           setSelectedItem(null);
         }}
-        onEdit={(item) => {
-          setIsViewModalOpen(false);
+        onEdit={() => {
+          setSelectedItem(selectedItem);
           setIsEditModalOpen(true);
         }}
         onDelete={(item) => deleteItem(item.id!)}

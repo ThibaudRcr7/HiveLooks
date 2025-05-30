@@ -9,7 +9,6 @@ const Header = () => {
   const scrollDirection = useScrollDirection();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -19,7 +18,6 @@ const Header = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
       if (window.innerWidth >= 1024) {
         setIsMobileMenuOpen(false);
       }

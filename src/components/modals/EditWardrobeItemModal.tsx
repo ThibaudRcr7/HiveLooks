@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WardrobeItem } from '../../firebase/firestore';
+import { WardrobeItem, ClothingCategory } from '../../types/clothing';
 
 interface EditWardrobeItemModalProps {
   item: WardrobeItem;
@@ -15,7 +15,7 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
   onSubmit,
 }) => {
   const [name, setName] = useState(item.name);
-  const [category, setCategory] = useState(item.category);
+  const [category, setCategory] = useState<ClothingCategory>(item.category);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -62,14 +62,20 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
               Catégorie
             </label>
-            <input
-              type="text"
+            <select
               id="category"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value as ClothingCategory)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               required
-            />
+            >
+              <option value="tops">Hauts</option>
+              <option value="bottoms">Bas</option>
+              <option value="dresses">Robes</option>
+              <option value="outerwear">Vestes/Manteaux</option>
+              <option value="shoes">Chaussures</option>
+              <option value="accessories">Accessoires</option>
+            </select>
           </div>
 
           <div className="flex justify-end space-x-3 mt-6">

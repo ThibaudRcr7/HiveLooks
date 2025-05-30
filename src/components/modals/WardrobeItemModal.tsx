@@ -1,5 +1,5 @@
 import React from 'react';
-import { WardrobeItem } from '../../firebase/firestore';
+import { WardrobeItem } from '../../types/clothing';
 
 interface WardrobeItemModalProps {
   item: WardrobeItem | null;

@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/firebase-config';
-import { getUserProfile, User } from '../firebase/users';
+import { getUserProfile } from '../firebase/users';
+
+export interface User {
+  uid: string;
+  username?: string;
+  photoURL?: string | null;
+}
 
 export interface UseUserHook {
   user: User | null;
@@ -25,7 +31,9 @@ export const useUser = (): UseUserHook => {
 
       try {
         const userProfile = await getUserProfile(firebaseUser.uid);
-        setUser(userProfile);
+        if (userProfile) {
+          setUser({ ...userProfile, uid: firebaseUser.uid });
+        }
       } catch (err) {
         console.error('Erreur lors de la récupération du profil utilisateur:', err);
         setError(err instanceof Error ? err : new Error('Erreur lors de la récupération du profil utilisateur'));
