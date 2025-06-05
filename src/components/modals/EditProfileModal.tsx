@@ -95,11 +95,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-hive-black/70 mb-1">
                   Photo de profil
                 </label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-4 text-center ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+                  className={`border-2 border-dashed rounded-lg p-4 text-center ${dragActive ? 'border-hive-purple bg-hive-purple/10' : 'border-hive-black/30'}`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
@@ -118,7 +118,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                           setImage(null);
                           setPreviewUrl(null);
                         }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        className="absolute -top-2 -right-2 bg-hive-pink text-white rounded-full p-1 hover:bg-hive-pink/90"
                       >
                         <svg
                           className="w-4 h-4"
@@ -148,7 +148,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                           />
                         </label>
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-hive-black/50">
                         ou glissez-déposez une image ici
                       </p>
                     </div>
@@ -159,7 +159,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
               <div>
                 <label
                   htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-hive-black/70 mb-1"
                 >
                   Pseudo
                 </label>
@@ -176,7 +176,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
               <div>
                 <label
                   htmlFor="bio"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-hive-black/70 mb-1"
                 >
                   Bio
                 </label>
@@ -193,7 +193,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg border-2 border-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none transition-all duration-200"
+                  className="px-4 py-2 bg-hive-pale text-hive-black rounded-lg border-2 border-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none transition-all duration-200"
                   disabled={isSubmitting}
                 >
                   Annuler

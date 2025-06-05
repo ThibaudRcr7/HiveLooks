@@ -23,7 +23,7 @@ const Avatar: FC<AvatarProps> = ({
 
   const statusColors = {
     online: 'bg-green-500',
-    offline: 'bg-gray-400'
+    offline: 'bg-hive-black/40'
   };
 
   return (

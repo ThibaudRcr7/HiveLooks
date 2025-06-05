@@ -15,7 +15,7 @@ const Input: FC<InputProps> = ({
   ...props
 }) => {
   const baseStyles = 'w-full px-3 py-2 rounded-lg border-2 border-hive-black focus:outline-none transition-colors duration-200';
-  const errorStyles = error ? 'border-red-500 focus:border-red-500' : 'focus:border-hive-pink';
+  const errorStyles = error ? 'border-hive-pink focus:border-hive-pink' : 'focus:border-hive-pink';
   const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
   return (
@@ -38,7 +38,7 @@ const Input: FC<InputProps> = ({
       {error && (
         <p
           id={`${inputId}-error`}
-          className="text-sm text-red-500 mt-1"
+          className="text-sm text-hive-pink mt-1"
           role="alert"
         >
           {error}
@@ -47,7 +47,7 @@ const Input: FC<InputProps> = ({
       {helperText && !error && (
         <p
           id={`${inputId}-helper`}
-          className="text-sm text-gray-500 mt-1"
+          className="text-sm text-hive-black/50 mt-1"
         >
           {helperText}
         </p>

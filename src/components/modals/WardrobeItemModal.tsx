@@ -26,7 +26,7 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
         {/* Bouton de fermeture */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 transition-colors"
+          className="absolute top-4 right-4 p-2 text-hive-black/50 hover:text-hive-black/70 transition-colors"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -37,7 +37,7 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
         <div className="absolute top-4 right-16">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-2 text-hive-black/50 hover:text-hive-black/70 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -45,13 +45,13 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
           </button>
 
           {isMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-hive-black/20 py-1">
               <button
                 onClick={() => {
                   onEdit(item);
                   setIsMenuOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="w-full text-left px-4 py-2 text-hive-black/70 hover:bg-hive-pale transition-colors"
               >
                 Modifier
               </button>
@@ -63,7 +63,7 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
                     onClose();
                   }
                 }}
-                className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 transition-colors"
+                className="w-full text-left px-4 py-2 text-hive-pink hover:bg-hive-pale transition-colors"
               >
                 Supprimer
               </button>
@@ -79,7 +79,7 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
             className="w-full max-h-[70vh] object-contain rounded-lg mb-4"
           />
           <h2 className="text-2xl font-piepie mb-2">{item.name}</h2>
-          <p className="text-gray-600">{item.category}</p>
+          <p className="text-hive-black/60">{item.category}</p>
         </div>
       </div>
     </div>

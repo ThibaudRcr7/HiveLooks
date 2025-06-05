@@ -45,7 +45,7 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-hive-black/70 mb-1">
               Nom
             </label>
             <input
@@ -53,20 +53,20 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-3 py-2 border border-hive-black/30 rounded-md focus:outline-none focus:ring-2 focus:ring-hive-pink"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category" className="block text-sm font-medium text-hive-black/70 mb-1">
               Catégorie
             </label>
             <select
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value as ClothingCategory)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-3 py-2 border border-hive-black/30 rounded-md focus:outline-none focus:ring-2 focus:ring-hive-pink"
               required
             >
               <option value="tops">Hauts</option>

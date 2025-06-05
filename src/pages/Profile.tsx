@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signOut } from 'firebase/auth';
 import { auth, firestore } from '../firebase/firebase-config';
@@ -15,20 +15,28 @@ import { toast } from 'react-hot-toast';
 import EditProfileModal from '../components/modals/EditProfileModal';
 import { User } from '../types';
 
-const Profile: FC = () => {
+interface ProfileProps {
+  userId?: string;
+}
+
+const Profile: FC<ProfileProps> = ({ userId: propUserId }) => {
+  const { userId: paramUserId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
   const [showAccountInfo, setShowAccountInfo] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'wardrobe' | 'looks' | 'posts'>('wardrobe');
+  const [selectedTab, setSelectedTab] = useState<'wardrobe' | 'looks' | 'posts'>('looks');
   const [username, setUsername] = useState('');
   const [postsCount, setPostsCount] = useState(0);
   const [looksCount, setLooksCount] = useState(0);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
-  const { wardrobeItems } = useWardrobe();
   const location = useLocation();
 
+  const targetUserId = paramUserId || propUserId || user?.uid;
+  const isOwnProfile = user?.uid === targetUserId;
+
+  const { wardrobeItems } = useWardrobe({ targetUserId });
   useEffect(() => {
     const hash = location.hash.replace('#', '');
     if (['wardrobe', 'looks', 'posts'].includes(hash)) {
@@ -38,9 +46,9 @@ const Profile: FC = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!user) return;
+      if (!targetUserId) return;
       try {
-        const profile = await getUserProfile(user.uid);
+        const profile = await getUserProfile(targetUserId);
         if (profile) {
           const userProfileData: User = {
             ...profile,
@@ -56,25 +64,22 @@ const Profile: FC = () => {
     };
 
     fetchUserProfile();
-  }, [user]);
+  }, [targetUserId]);
 
-  // Charger les données des onglets dès le chargement initial
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (!user) return;
+      if (!targetUserId) return;
 
       try {
         // Récupérer les looks
-        const userLooks = await getUserLooks(user.uid);
+        const userLooks = await getUserLooks(targetUserId);
         setLooksCount(userLooks.length);
 
         // Récupérer les posts
         const postsRef = collection(firestore, 'posts');
-        const q = query(postsRef, where('userId', '==', user.uid));
+        const q = query(postsRef, where('userId', '==', targetUserId));
         const querySnapshot = await getDocs(q);
         setPostsCount(querySnapshot.docs.length);
-
-        // Les données de la garde-robe sont déjà chargées via le hook useWardrobe
       } catch (error) {
         console.error('Erreur lors du chargement initial des données:', error);
         toast.error('Erreur lors du chargement des données');
@@ -82,10 +87,10 @@ const Profile: FC = () => {
     };
 
     fetchInitialData();
-  }, [user]);
+  }, [targetUserId]);
 
   const handleEditProfile = async (data: { username: string; bio: string; photoURL: string }) => {
-    if (!user) return;
+    if (!user || !isOwnProfile) return;
 
     try {
       await updateUserProfile(user.uid, {
@@ -109,6 +114,8 @@ const Profile: FC = () => {
   };
 
   const handleLogout = async () => {
+    if (!isOwnProfile) return;
+    
     try {
       setLoading(true);
       await signOut(auth);
@@ -122,31 +129,34 @@ const Profile: FC = () => {
     }
   };
 
-  if (!user) {
+  if (!targetUserId) {
     navigate('/login');
     return null;
   }
 
   return (
-    <div className="min-h-screen max-w-[1400px] container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between py-12">
+    <div className="bg-hive-pale min-h-screen max-w-[1400px] container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between py-12">
       <div className="flex flex-col items-center gap-8">
         <ProfileCard
-          name={username || user?.email?.split('@')[0] || 'Utilisateur'}
+          name={username || userProfile?.email?.split('@')[0] || 'Utilisateur'}
           bio={userProfile?.bio || "Bienvenue sur mon profil HiveLooks ! Je suis passionné(e) par la mode et le style."}
           imageSrc={userProfile?.photoURL || "/images/default-avatar.svg"}
           buttonText={loading ? 'Déconnexion...' : 'Se déconnecter'}
           onButtonClick={handleLogout}
-          onEditClick={() => setIsEditProfileModalOpen(true)}
+          onEditClick={() => isOwnProfile && setIsEditProfileModalOpen(true)}
+          showActions={isOwnProfile}
         />
 
-        <button
-          onClick={() => setShowAccountInfo(!showAccountInfo)}
-          className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          {showAccountInfo ? 'Masquer les informations du compte' : 'Afficher les informations du compte'}
-        </button>
+        {isOwnProfile && (
+          <button
+            onClick={() => setShowAccountInfo(!showAccountInfo)}
+            className="text-sm text-hive-black/50 hover:text-hive-black/80 transition-colors"
+          >
+            {showAccountInfo ? 'Masquer les informations du compte' : 'Afficher les informations du compte'}
+          </button>
+        )}
 
-        {userProfile && (
+        {userProfile && isOwnProfile && (
           <EditProfileModal
             isOpen={isEditProfileModalOpen}
             onClose={() => setIsEditProfileModalOpen(false)}
@@ -155,15 +165,15 @@ const Profile: FC = () => {
           />
         )}
 
-        {showAccountInfo && (
-          <div className="w-[400px] bg-white rounded-lg border-2 border-black shadow-[4px_4px_0_#000000] p-6 space-y-4">
+        {showAccountInfo && isOwnProfile && (
+          <div className="w-[400px] bg-white shadow-md rounded-lg border-2 border-black shadow-[4px_4px_0_#000000] p-6 space-y-4">
             <h3 className="font-satoshi font-bold text-xl">Informations du compte</h3>
             <div>
-              <label className="block text-sm font-medium text-gray-700">ID Utilisateur</label>
-              <div className="mt-1 text-sm text-gray-900 bg-gray-50 p-2 rounded">{user?.uid}</div>
+              <label className="block text-sm font-medium text-hive-black/60">ID Utilisateur</label>
+              <div className="mt-1 text-sm text-hive-black/70 bg-gray-50 p-2 rounded">{user?.uid}</div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Statut</label>
+              <label className="block text-sm font-medium text-hive-black/60">Statut</label>
               <div className="mt-1">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user?.emailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                   {user?.emailVerified ? 'Vérifié' : 'Non vérifié'}
@@ -171,8 +181,8 @@ const Profile: FC = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Dernière connexion</label>
-              <div className="mt-1 text-sm text-gray-900 bg-gray-50 p-2 rounded">
+              <label className="block text-sm font-medium text-hive-black/60">Dernière connexion</label>
+              <div className="mt-1 text-sm text-hive-black/70 bg-gray-50 p-2 rounded">
                 {user?.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A'}
               </div>
             </div>
@@ -186,10 +196,10 @@ const Profile: FC = () => {
               setSelectedTab('wardrobe');
               window.location.hash = 'wardrobe';
             }}
-            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'wardrobe' ? 'bg-black shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
+            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'wardrobe' ? 'shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
           >
             <div className="flex items-center gap-2 justify-center">
-              <span className={`font-satoshi font-bold ${selectedTab === 'wardrobe' ? 'text-pink-500' : ''}`}>{wardrobeItems.length}</span>
+              <span className={`font-satoshi font-bold ${selectedTab === 'wardrobe' ? 'text-hive-pink' : ''}`}>{wardrobeItems.length}</span>
               <span>Garde-robe</span>
             </div>
           </button>
@@ -198,10 +208,10 @@ const Profile: FC = () => {
               setSelectedTab('looks');
               window.location.hash = 'looks';
             }}
-            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'looks' ? 'bg-black shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
+            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'looks' ? 'shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
           >
             <div className="flex items-center gap-2 justify-center">
-              <span className={`font-satoshi font-bold ${selectedTab === 'looks' ? 'text-pink-500' : ''}`}>{looksCount}</span>
+              <span className={`font-satoshi font-bold ${selectedTab === 'looks' ? 'text-hive-pink' : ''}`}>{looksCount}</span>
               <span>Looks</span>
             </div>
           </button>
@@ -210,26 +220,20 @@ const Profile: FC = () => {
               setSelectedTab('posts');
               window.location.hash = 'posts';
             }}
-            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'posts' ? 'bg-black shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
+            className={`w-full bg-white rounded-lg border-2 border-black p-4 transition-all duration-200 ${selectedTab === 'posts' ? 'shadow-none' : 'shadow-[0_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none'}`}
           >
             <div className="flex items-center gap-2 justify-center">
-              <span className={`font-satoshi font-bold ${selectedTab === 'posts' ? 'text-pink-500' : ''}`}>{postsCount}</span>
+              <span className={`font-satoshi font-bold ${selectedTab === 'posts' ? 'text-hive-pink' : ''}`}>{postsCount}</span>
               <span>Posts</span>
             </div>
           </button>
         </div>
 
-        {/* Contenu des onglets avec transition */}
-        <div className="w-full animate-fadeIn">
-          <div style={{ display: selectedTab === 'wardrobe' ? 'block' : 'none' }}>
-            <WardrobeTab />
-          </div>
-          <div style={{ display: selectedTab === 'looks' ? 'block' : 'none' }}>
-            {user && <LooksTab userId={user.uid} onLooksCountChange={setLooksCount} />}
-          </div>
-          <div style={{ display: selectedTab === 'posts' ? 'block' : 'none' }}>
-            <PostsTab onPostsCountChange={setPostsCount} />
-          </div>
+        {/* Contenu des onglets */}
+        <div className="w-full">
+          {selectedTab === 'wardrobe' && <WardrobeTab isOwnProfile={isOwnProfile} userId={targetUserId} />}
+          {selectedTab === 'looks' && <LooksTab userId={targetUserId} />}
+          {selectedTab === 'posts' && <PostsTab userId={targetUserId} />}
         </div>
       </div>
     </div>

@@ -1,42 +1,28 @@
+// Palette de couleurs officielle
 export const colors = {
   // Couleurs principales
-  'hive-beige': '#FFFDE3',
-  'hive-orange': '#FFAF02',
-  'hive-pink': '#FF71A6',
-  'hive-purple': '#726CFF',
-  'hive-black': '#111111',
+  'hive-yellow': '#FFAF02',  // Jaune principal
+  'hive-pink': '#FF3A82',    // Rose
+  'hive-orange': '#F57200',   // Orange
+  'hive-purple': '#906CFE',   // Mauve
+  'hive-black': '#111111',    // Noir
+  'hive-pale': '#FFFDE3',     // Jaune pâle (background)
+  'hive-white': '#FFFFFF',    // Blanc
 
-  // Variations de couleurs
-  'hive-orange-light': '#FFD180',
-  'hive-pink-light': '#FFB5D3',
-  'hive-purple-light': '#B8B5FF',
-
-  // États
-  'success': '#22C55E',  // Vert pour les validations
-  'error': '#EF4444',    // Rouge pour les erreurs
-  'warning': '#F59E0B',  // Orange pour les avertissements
-  'info': '#3B82F6',     // Bleu pour les informations
-
-  // Niveaux de gris
-  'gray-100': '#F3F4F6',
-  'gray-200': '#E5E7EB',
-  'gray-300': '#D1D5DB',
-  'gray-400': '#9CA3AF',
-  'gray-500': '#6B7280',
-  'gray-600': '#4B5563',
-  'gray-700': '#374151',
-  'gray-800': '#1F2937',
-  'gray-900': '#111827'
+  // États (utilisant la palette officielle)
+  'success': '#F57200',       // Orange pour les validations
+  'error': '#FF3A82',         // Rose pour les erreurs
+  'warning': '#FFAF02',       // Jaune pour les avertissements
+  'info': '#906CFE'           // Mauve pour les informations
 };
 
 // Exportation des couleurs pour Tailwind
 export const tailwindColors = {
-  'hive-beige': colors['hive-beige'],
-  'hive-orange': colors['hive-orange'],
+  'hive-yellow': colors['hive-yellow'],
   'hive-pink': colors['hive-pink'],
+  'hive-orange': colors['hive-orange'],
   'hive-purple': colors['hive-purple'],
   'hive-black': colors['hive-black'],
-  'hive-orange-light': colors['hive-orange-light'],
-  'hive-pink-light': colors['hive-pink-light'],
-  'hive-purple-light': colors['hive-purple-light']
+  'hive-pale': colors['hive-pale'],
+  'hive-white': colors['hive-white']
 };

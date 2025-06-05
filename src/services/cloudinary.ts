@@ -2,6 +2,7 @@ import { CloudinaryService } from '../types';
 
 const CLOUDINARY_URL = process.env.VITE_CLOUDINARY_URL;
 const UPLOAD_PRESET = process.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB en octets
 
 export const cloudinaryService: CloudinaryService = {
   uploadImage: async (file: File): Promise<string> => {
@@ -9,9 +10,21 @@ export const cloudinaryService: CloudinaryService = {
       throw new Error('Configuration Cloudinary manquante');
     }
 
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('La taille du fichier ne doit pas dépasser 2 Mo');
+    }
+
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
+    formData.append("upload_preset", "ml_default");
+    
+    // Ajout des paramètres d'optimisation Cloudinary
+    formData.append('transformation', JSON.stringify({
+      width: 1200,
+      crop: 'limit',
+      quality: 'auto',
+      fetch_format: 'auto'
+    }));
 
     try {
       const response = await fetch(CLOUDINARY_URL, {

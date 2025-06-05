@@ -88,21 +88,25 @@ export const getUserPosts = async (userId: string): Promise<Post[]> => {
 // Fonctions de gestion de la garde-robe
 export const addWardrobeItem = async (item: Omit<WardrobeItem, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
   const itemId = crypto.randomUUID();
-  await firestoreService.setDocument<WardrobeItem>('wardrobeItems', itemId, item);
+  await firestoreService.setDocument<WardrobeItem>('wardrobe', itemId, item);
   return itemId;
 };
 
 export const getWardrobeItems = async (userId: string): Promise<WardrobeItem[]> => {
-  return firestoreService.queryDocuments<WardrobeItem>('wardrobeItems', [
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('userId invalide pour la récupération des vêtements');
+  }
+
+  return firestoreService.queryDocuments<WardrobeItem>('wardrobe', [
     where('userId', '==', userId),
     orderBy('createdAt', 'desc')
   ]);
 };
 
 export const updateWardrobeItem = async (itemId: string, updates: Partial<Omit<WardrobeItem, 'id'>>): Promise<void> => {
-  await firestoreService.updateDocument<WardrobeItem>('wardrobeItems', itemId, updates);
+  await firestoreService.updateDocument<WardrobeItem>('wardrobe', itemId, updates);
 };
 
 export const deleteWardrobeItem = async (itemId: string): Promise<void> => {
-  await firestoreService.deleteDocument('wardrobeItems', itemId);
+  await firestoreService.deleteDocument('wardrobe', itemId);
 };

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { firestore } from '../firebase/firebase-config';
+import { createPost } from '../firebase/posts';
 import { toast } from 'react-hot-toast';
 import { uploadImageToCloudinary } from '../utils/cloudinary';
 
@@ -33,15 +32,13 @@ const CreatePost = () => {
 
     try {
       setLoading(true);
-      const postData = {
-        ...formData,
-        style: formData.style.startsWith('#') ? formData.style : `#${formData.style.trim()}`,
-        userId: currentUser.uid,
-        createdAt: serverTimestamp(),
-        likes: []
-      };
-
-      await addDoc(collection(firestore, 'posts'), postData);
+      await createPost({
+        style: formData.style,
+        question: formData.question,
+        details: formData.details,
+        imageUrl: formData.imageUrl,
+        userId: currentUser.uid
+      });
       toast.success('Post créé avec succès !');
       navigate('/profile');
     } catch (error) {
@@ -124,7 +121,7 @@ const CreatePost = () => {
                 id="style"
                 value={formData.style.startsWith('#') ? formData.style.substring(1) : formData.style}
                 onChange={(e) => setFormData(prev => ({ ...prev, style: e.target.value.trim() }))}
-                className="block w-full pl-8 pr-3 py-2 rounded-xl border-2 border-hive-black shadow-sm focus:ring-2 focus:ring-hive-pink focus:border-hive-pink"
+                className="block w-full pl-8 pr-3 py-2 rounded-xl border-2 border-hive-black shadow-sm transition-all duration-200 focus:ring-2 focus:ring-[#FF3A82] focus:border-[#FF3A82]"
                 placeholder="vintage"
                 required
               />
@@ -140,7 +137,7 @@ const CreatePost = () => {
               id="question"
               value={formData.question}
               onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-              className="block w-full px-3 py-2 rounded-xl border-2 border-hive-black shadow-sm focus:ring-2 focus:ring-hive-pink focus:border-hive-pink"
+              className="block w-full px-3 py-2 rounded-xl border-2 border-hive-black shadow-sm transition-all duration-200 focus:ring-2 focus:ring-[#FF3A82] focus:border-[#FF3A82]"
               placeholder="Que pensez-vous de cette tenue ?"
               required
             />
@@ -155,7 +152,7 @@ const CreatePost = () => {
               value={formData.details}
               onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
               rows={4}
-              className="block w-full px-3 py-2 rounded-xl border-2 border-hive-black shadow-sm focus:ring-2 focus:ring-hive-pink focus:border-hive-pink resize-none"
+              className="block w-full px-3 py-2 rounded-xl border-2 border-hive-black shadow-sm transition-all duration-200 focus:ring-2 focus:ring-[#FF3A82] focus:border-[#FF3A82] resize-none"
               placeholder="Décrivez votre tenue et ce que vous souhaitez savoir..."
               required
             />

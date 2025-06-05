@@ -16,6 +16,7 @@ const LooksTab: FC<LooksTabProps> = ({ userId, onLooksCountChange }) => {
   const [looks, setLooks] = useState<LookType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const isOwnProfile = user?.uid === userId;
 
   useEffect(() => {
     const fetchLooks = async () => {
@@ -37,27 +38,51 @@ const LooksTab: FC<LooksTabProps> = ({ userId, onLooksCountChange }) => {
   }, [userId]);
 
   if (loading) {
-    return <div className="flex justify-center items-center p-8">Chargement...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-hive-purple"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex justify-center items-center p-8 text-red-500">{error}</div>;
+    return <div className="flex justify-center items-center min-h-[200px] text-red-500">{error}</div>;
   }
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex justify-end px-4">
-        <Link
-          to="/creer-look"
-          className="bg-hive-pink text-black font-bold rounded-lg border-2 border-hive-black shadow-[4px_4px_0_0_#111111] px-4 py-2 hover:translate-y-[4px] hover:shadow-none transition-all duration-200"
-        >
-          Créer un look
-        </Link>
-      </div>
+    <div className="max-w-4xl w-full mx-auto">
+      {isOwnProfile && (
+        <div className="flex justify-end mb-6">
+          <Link
+            to="/creer-look"
+            className="bg-hive-pink text-black font-bold rounded-lg border-2 border-hive-black shadow-[4px_4px_0_0_#111111] px-4 py-2 hover:translate-y-[4px] hover:shadow-none transition-all duration-200"
+          >
+            Créer un look
+          </Link>
+        </div>
+      )}
       <div className="grid gap-8">
-        {looks.map((look) => (
-          <Look key={look.id} look={look} />
-        ))}
+        {looks.length > 0 ? (
+          looks.map((look) => (
+            <Look 
+              key={look.id} 
+              look={look} 
+              onDelete={(lookId) => {
+                const updatedLooks = looks.filter(l => l.id !== lookId);
+                setLooks(updatedLooks);
+                onLooksCountChange?.(updatedLooks.length);
+              }}
+            />
+          ))
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-hive-black/50">
+            {isOwnProfile
+                ? "Vous n'avez pas encore publié de looks."
+                : "Cet utilisateur n'a pas encore publié de looks."}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,12 +7,14 @@ import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase-config';
 import { Menu } from '@headlessui/react';
 import { getUserProfile } from '../firebase/users';
+import Tag from './common/Tag';
 
 interface PostProps {
-  post: PostType;
+  post: PostType & { tags: string[] };
+  onDelete?: (postId: string) => void;
 }
 
-const Post = ({ post }: PostProps) => {
+export const Post = ({ post, onDelete }: PostProps) => {
   const { currentUser } = useAuth();
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,6 +27,7 @@ const Post = ({ post }: PostProps) => {
   const [userPhotoURL, setUserPhotoURL] = useState<string | null>(null);
   const [commentUsernames, setCommentUsernames] = useState<{[key: string]: string}>({});
   const [commentUserPhotos, setCommentUserPhotos] = useState<{[key: string]: string | null}>({});
+
 
   useEffect(() => {
     if (!post.id) return;
@@ -135,17 +138,17 @@ const Post = ({ post }: PostProps) => {
               </Link>
               {currentUser && currentUser.uid === post.userId && (
                 <Menu as="div" className="relative ml-auto">
-                  <Menu.Button className="p-2 hover:bg-gray-100 rounded-full">
+                  <Menu.Button className="p-2 hover:bg-hive-pale rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                    </svg>
-                  </Menu.Button>
-                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                     </svg>
+                   </Menu.Button>
+                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-hive-black/20 z-10">
                     <Menu.Item>
                       {({ active }) => (
                         <button
                           onClick={() => setIsEditing(true)}
-                          className={`${active ? 'bg-gray-100' : ''} w-full text-left px-4 py-2 text-sm text-gray-700`}
+                          className={`${active ? 'bg-hive-pale' : ''} w-full text-left px-4 py-2 text-sm text-hive-black/70`}
                         >
                           Modifier
                         </button>
@@ -158,13 +161,15 @@ const Post = ({ post }: PostProps) => {
                             if (window.confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
                               try {
                                 await deletePost(post.id!);
+                                onDelete?.(post.id!);
                                 toast.success('Post supprimé avec succès');
                               } catch (error) {
+                                console.error('Erreur lors de la suppression du post:', error);
                                 toast.error('Erreur lors de la suppression du post');
                               }
                             }
                           }}
-                          className={`${active ? 'bg-gray-100' : ''} w-full text-left px-4 py-2 text-sm text-red-600`}
+                          className={`${active ? 'bg-hive-pale' : ''} w-full text-left px-4 py-2 text-sm text-hive-pink`}
                         >
                           Supprimer
                         </button>
@@ -175,19 +180,21 @@ const Post = ({ post }: PostProps) => {
               )}
             </div>
           </div>
-          <h3 className="text-xl font-satoshi mb-4">{post.question}</h3>
+          <div className="flex flex-col gap-4 mb-4">
+            <h3 className="text-xl font-satoshi">{post.question}</h3>
+          </div>
           {isEditing ? (
             <div className="mb-6">
               <input
                 type="text"
                 value={editedQuestion}
                 onChange={(e) => setEditedQuestion(e.target.value)}
-                className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent"
+                className="w-full mb-4 px-4 py-2 border border-hive-black/30 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent"
               />
               <textarea
                 value={editedDetails}
                 onChange={(e) => setEditedDetails(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent"
+                className="w-full px-4 py-2 border border-hive-black/30 rounded-lg focus:ring-2 focus:ring-hive-purple focus:border-transparent"
                 rows={4}
               />
               <div className="flex gap-2 mt-4">
@@ -214,7 +221,7 @@ const Post = ({ post }: PostProps) => {
                     setEditedDetails(post.details);
                     setIsEditing(false);
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                  className="px-4 py-2 bg-hive-pale text-hive-black rounded-lg hover:bg-hive-pale/80"
                 >
                   Annuler
                 </button>
@@ -222,7 +229,7 @@ const Post = ({ post }: PostProps) => {
             </div>
           ) : (
             <div className="mb-6">
-              <div className="flex items-center gap-2 text-gray-600 cursor-pointer" onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}>
+              <div className="flex items-center gap-2 text-hive-black/60 cursor-pointer" onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}>
                 <span className="text-base">{isDetailsExpanded ? 'Afficher moins' : 'Afficher plus'}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -236,8 +243,14 @@ const Post = ({ post }: PostProps) => {
               </div>
               {isDetailsExpanded && (
                 <div className="mt-4">
-                  <p className="text-gray-700">{post.details}</p>
-                  <span className="inline-block mt-2 text-sm text-gray-600 font-satoshi">{post.style}</span>
+                  <p className="text-hive-black/70">{post.details}</p>
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {post.tags.map((tag) => (
+                        <Tag key={tag} tag={tag} variant="post" />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -275,7 +288,7 @@ const Post = ({ post }: PostProps) => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={`w-5 h-5 ${comment.likes?.includes(currentUser?.uid || '') ? 'text-[#FFAF02]' : 'text-gray-500'}`}
+                      className={`w-5 h-5 ${comment.likes?.includes(currentUser?.uid || '') ? 'text-hive-yellow' : 'text-hive-black/50'}`}
                       fill={comment.likes?.includes(currentUser?.uid || '') ? 'currentColor' : 'none'}
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -285,14 +298,14 @@ const Post = ({ post }: PostProps) => {
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                    <span className={comment.likes?.includes(currentUser?.uid || '') ? 'text-[#FFAF02]' : 'text-gray-500'}>
-                      {comment.likes?.length || 0}
-                    </span>
+                        />
+                     </svg>
+                     <span className={comment.likes?.includes(currentUser?.uid || '') ? 'text-hive-yellow' : 'text-hive-black/50'}>
+                       {comment.likes?.length || 0}
+                     </span>
                   </button>
                 </div>
-                <p className="text-gray-700 ml-14">{comment.content}</p>
+                <p className="text-hive-black/70 ml-14">{comment.content}</p>
               </div>
             ))}
           </div>

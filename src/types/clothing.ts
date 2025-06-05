@@ -1,10 +1,17 @@
 export enum ClothingCategory {
-  TOPS = 'tops',
-  BOTTOMS = 'bottoms',
-  DRESSES = 'dresses',
-  OUTERWEAR = 'outerwear',
-  SHOES = 'shoes',
-  ACCESSORIES = 'accessories'
+  TSHIRT = 't-shirt',
+  PULL = 'pull',
+  SWEATSHIRT = 'sweatshirt',
+  CHEMISE = 'chemise',
+  PANTALON = 'pantalon',
+  SHORT = 'short',
+  JUPE = 'jupe',
+  ROBE = 'robe',
+  VESTE = 'veste',
+  MANTEAU = 'manteau',
+  CARDIGAN = 'cardigan',
+  ACCESSOIRE = 'accessoire',
+  CHAUSSURES = 'chaussures'
 }
 
 export interface WardrobeItem {

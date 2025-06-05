@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where, updateDoc, doc, orderBy, serverTimestamp, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, orderBy, serverTimestamp, writeBatch, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { firestore } from './firebase-config';
 
 // Types
@@ -7,7 +7,7 @@ export interface Comment {
   userId: string;
   content: string;
   createdAt: Date;
-  likes: string[];
+  likes?: string[];
 }
 
 export interface Post {
@@ -18,7 +18,7 @@ export interface Post {
   style: string;
   imageUrl: string;
   createdAt: Date;
-  likes: string[];
+  tags: string[];
 }
 
 // Collection reference
@@ -113,16 +113,24 @@ export const toggleCommentLike = async (postId: string, commentId: string, userI
   }
 };
 
+
+
 /**
  * Crée un nouveau post
  */
-export const createPost = async (post: Omit<Post, 'id' | 'createdAt' | 'comments' | 'likes'>): Promise<string> => {
+export const createPost = async (post: Omit<Post, 'id' | 'createdAt' | 'tags'>): Promise<string> => {
   try {
+    // Extraire les hashtags du style et des détails
+    const styleTag = post.style.startsWith('#') ? [post.style.toLowerCase()] : [`#${post.style.toLowerCase()}`];
+    const detailsTags = post.details
+      .split(/\s+/)
+      .filter(word => word.startsWith('#'))
+      .map(tag => tag.toLowerCase());
+
     const newPost = {
       ...post,
       createdAt: serverTimestamp(),
-      comments: [],
-      likes: []
+      tags: [...new Set([...styleTag, ...detailsTags])]
     };
 
     const docRef = await addDoc(postsCollection, newPost);
@@ -204,15 +212,16 @@ export const deleteAllPosts = async (): Promise<void> => {
       commentsSnapshot.docs.forEach((commentDoc) => {
         batch.delete(commentDoc.ref);
       });
-
+      
       // Supprimer le post
       batch.delete(postDoc.ref);
     }
 
     // Exécuter toutes les opérations de suppression en une seule transaction
     await batch.commit();
+    console.log('Tous les posts et leurs commentaires ont été supprimés avec succès.');
   } catch (error) {
     console.error('Erreur lors de la suppression de tous les posts:', error);
-    throw new Error('Impossible de supprimer tous les posts. Veuillez réessayer plus tard.');
+    throw error;
   }
 };

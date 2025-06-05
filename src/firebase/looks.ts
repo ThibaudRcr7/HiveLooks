@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where, updateDoc, doc, orderBy, serverTimestamp, writeBatch, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, orderBy, serverTimestamp, getDoc, arrayUnion, arrayRemove, deleteDoc } from 'firebase/firestore';
 import { firestore } from './firebase-config';
 
 // Types
@@ -19,6 +19,7 @@ export interface Look {
   createdAt: Date;
   likes: string[];
   style?: string;
+  tags?: string[];
 }
 
 // Collection reference
@@ -163,7 +164,8 @@ export const createLook = async (look: Omit<Look, 'id' | 'createdAt' | 'comments
     const newLook = {
       ...look,
       createdAt: serverTimestamp(),
-      likes: []
+      likes: [],
+      tags: look.style ? [look.style] : []
     };
 
     const docRef = await addDoc(looksCollection, newLook);
@@ -188,7 +190,7 @@ export const updateLook = async (lookId: string, updates: Partial<Look>): Promis
 };
 
 /**
- * Supprime un look et ses commentaires
+ * Supprime un look
  */
 export const deleteLook = async (lookId: string): Promise<void> => {
   try {
@@ -204,24 +206,10 @@ export const deleteLook = async (lookId: string): Promise<void> => {
       return;
     }
 
-    const batch = writeBatch(firestore);
-    
-    // Supprimer tous les commentaires du look
-    const commentsRef = collection(firestore, 'looks', lookId, 'comments');
-    const commentsSnapshot = await getDocs(commentsRef);
-    
-    commentsSnapshot.docs.forEach((commentDoc) => {
-      batch.delete(commentDoc.ref);
-    });
-    
-    // Supprimer le look
-    batch.delete(lookRef);
-    
-    // Exécuter toutes les opérations de suppression en une seule transaction
-    await batch.commit();
-    console.log(`Look ${lookId} et ses commentaires ont été supprimés avec succès.`);
+    await deleteDoc(lookRef);
+    console.log(`Look ${lookId} a été supprimé avec succès.`);
   } catch (error) {
-    console.error('Erreur lors de la suppression du look et de ses commentaires:', error);
+    console.error('Erreur lors de la suppression du look:', error);
     throw error;
   }
 };

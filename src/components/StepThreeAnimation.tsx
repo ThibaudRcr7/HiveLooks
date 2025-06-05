@@ -1,7 +1,7 @@
 import { FC, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import BulleTexte from '../assets/images/illustrations/bulle-texte-2.svg';
-import heroImage from '../assets/images/hero-image.jpg';
+import heroImage from '../assets/images/photos/escalier-outfit.webp';
 
 const StepThreeAnimation: FC = () => {
   const sectionRef = useRef(null);

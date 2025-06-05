@@ -66,14 +66,14 @@ const CreateLook = () => {
 
   return (
     <div className="min-h-screen container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-5xl mx-auto bg-white rounded-lg border-2 border-hive-black shadow-[8px_8px_0_0_#726CFF] p-6">
+      <div className="max-w-5xl mx-auto bg-white rounded-[32px] border-[2px] border-hive-black shadow-[8px_8px_0_0_#906CFE,_8px_8px_0_2px_#111111] p-6">
         
         <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2 space-y-6">
             <div className="h-full flex flex-col items-center justify-center">
               <label
                 htmlFor="image"
-                className="inline-block px-6 py-2 bg-hive-purple text-hive-black rounded-lg border-2 border-hive-black shadow-[4px_4px_0_0_#111111] cursor-pointer mb-4"
+                className="inline-block px-6 py-3 bg-hive-purple text-hive-black font-bold text-base md:text-lg rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none transition-all duration-200 cursor-pointer mb-4"
               >
                 Choisir une photo
               </label>
@@ -144,7 +144,7 @@ const CreateLook = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-hive-pink text-hive-black rounded-lg border-2 border-hive-black shadow-[4px_4px_0_0_#111111] hover:translate-y-[4px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-hive-purple text-black font-bold text-base md:text-lg rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Création en cours...' : 'Créer le look'}
               </button>
