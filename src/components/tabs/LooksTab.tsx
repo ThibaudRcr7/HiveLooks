@@ -55,7 +55,7 @@ const LooksTab: FC<LooksTabProps> = ({ userId, onLooksCountChange }) => {
         <div className="flex justify-end mb-6">
           <Link
             to="/creer-look"
-            className="bg-hive-pink text-black font-bold rounded-lg border-2 border-hive-black shadow-[4px_4px_0_0_#111111] px-4 py-2 hover:translate-y-[4px] hover:shadow-none transition-all duration-200"
+            className="bg-hive-pink text-black font-bold rounded-lg border-2 border-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none transition-all duration-200 px-4 py-2"
           >
             Créer un look
           </Link>

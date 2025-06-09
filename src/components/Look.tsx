@@ -1,21 +1,20 @@
-import { useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu } from '@headlessui/react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { Look as LookType, toggleLike, updateLook, deleteLook } from '../firebase/looks';
 import { getUserProfile } from '../firebase/users';
-import Tag from './common/Tag';
-import Spinner from '../components/common/Spinner';
-
-
+import ImageModal from './ImageModal';
+import CaretCircleDown from '../assets/images/icons/caret-circle-down.svg';
+import CaretCircleUp from '../assets/images/icons/caret-circle-up.svg';
 
 interface LookProps {
   look: LookType;
   onDelete?: (lookId: string) => void;
 }
 
-const Look = ({ look, onDelete }: LookProps) => {
+const Look: FC<LookProps> = ({ look, onDelete }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [username, setUsername] = useState<string>('');
@@ -26,6 +25,7 @@ const Look = ({ look, onDelete }: LookProps) => {
   const [editedTitle, setEditedTitle] = useState(look.title);
   const [editedDescription, setEditedDescription] = useState(look.description);
   const [editedTags, setEditedTags] = useState(look.tags || []);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -76,6 +76,14 @@ const Look = ({ look, onDelete }: LookProps) => {
       toast.error('Une erreur est survenue lors du like');
     }
   };
+
+  if (!look) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-gray-500">Look non trouvé</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-[32px] border-[2px] border-hive-black shadow-[8px_8px_0_0_#906CFE,_8px_8px_0_2px_#111111] overflow-hidden mb-6 h-[700px]">
@@ -231,29 +239,27 @@ const Look = ({ look, onDelete }: LookProps) => {
 
           <div className="flex-grow mb-6">
             <div className="flex items-center gap-2 text-hive-black/60 cursor-pointer" onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}>
-              <span className="text-base">{isDetailsExpanded ? 'Afficher moins' : 'Afficher plus'}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={`w-5 h-5 transform transition-transform ${isDetailsExpanded ? 'rotate-180' : ''}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <span className={`text-base transition-colors duration-300 ${!isDetailsExpanded ? 'text-hive-purple' : ''}`}>
+                {isDetailsExpanded ? 'Afficher moins' : 'Afficher plus'}
+              </span>
+              <img 
+                src={CaretCircleDown} 
+                alt={isDetailsExpanded ? "Afficher moins" : "Afficher plus"}
+                className={`w-5 h-5 transition-all duration-300 ${isDetailsExpanded ? 'rotate-180 [filter:brightness(0)_opacity(60%)]' : '[filter:invert(13%)_sepia(94%)_saturate(7481%)_hue-rotate(267deg)_brightness(86%)_contrast(112%)]'}`}
+              />
             </div>
             {isDetailsExpanded && (
               <div className="mt-4">
                 <p className="text-hive-black/70 text-lg leading-relaxed whitespace-pre-wrap mb-4">{look.description}</p>
-                {(look.tags || []).length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {(look.tags || []).map((tag) => (
-                      <Tag
+                {look.tags && look.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {look.tags.map((tag) => (
+                      <button
                         key={tag}
-                        tag={tag}
-                        variant="look"
-                        onClick={() => window.location.href = `/discover?tag=${encodeURIComponent(tag)}`}
-                      />
+                        className="px-3 py-1.5 text-sm font-bold rounded-lg bg-white text-hive-black border border-hive-black/30 hover:bg-[#FFFDE3] transition-all duration-200"
+                      >
+                        {tag}
+                      </button>
                     ))}
                   </div>
                 )}
@@ -284,11 +290,19 @@ const Look = ({ look, onDelete }: LookProps) => {
             <img
               src={look.imageUrl}
               alt={look.title}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setIsImageModalOpen(true)}
             />
           </div>
         </div>
       </div>
+
+      <ImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        imageUrl={look.imageUrl}
+        alt={look.title}
+      />
     </div>
   );
 };

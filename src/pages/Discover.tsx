@@ -3,7 +3,6 @@ import { getAllPosts, Post as PostType } from '../firebase/posts';
 import { getAllLooks, Look as LookType } from '../firebase/looks';
 import Post from '../components/Post';
 import Look from '../components/Look';
-import Tag from '../components/common/Tag';
 import { toast } from 'react-hot-toast';
 
 const Discover = () => {
@@ -81,17 +80,12 @@ const Discover = () => {
     const matchesSearch = title.toLowerCase().includes(search) ||
                          description.toLowerCase().includes(search);
     
-    // Vérifier si l'élément correspond au tag sélectionné
     if (selectedTag) {
-      // Extraire le tag sans le compte entre parenthèses
       const cleanTag = selectedTag.split(' (')[0];
-      if ('tags' in item && Array.isArray(item.tags)) {
-        return matchesSearch && item.tags.includes(cleanTag);
-      }
-      return false; // Si pas de tags, ne pas inclure dans les résultats filtrés
+      return matchesSearch && item.tags?.includes(cleanTag);
     }
     
-    return matchesSearch; // Si pas de tag sélectionné, filtrer uniquement sur la recherche
+    return matchesSearch;
   }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   if (loading) {
@@ -137,12 +131,17 @@ const Discover = () => {
             {popularTags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {popularTags.map(({ tag, count }) => (
-                  <Tag
+                  <button
                     key={tag}
-                    tag={`${tag} (${count})`}
                     onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                    isSelected={selectedTag === tag}
-                  />
+                    className={`px-3 py-1.5 text-sm font-bold rounded-lg border border-hive-black transition-all duration-200 ${
+                      selectedTag === tag
+                        ? 'bg-hive-yellow text-hive-black shadow-[0_3px_0_0_#111111] hover:translate-y-[3px] hover:shadow-none'
+                        : 'bg-white text-hive-black border border-hive-black/30 hover:bg-[#FFFDE3]'
+                    }`}
+                  >
+                    {tag} ({count})
+                  </button>
                 ))}
               </div>
             ) : (

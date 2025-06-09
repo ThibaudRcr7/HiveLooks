@@ -20,16 +20,16 @@ const ProfileCard: FC<ProfileCardProps> = ({
   showActions = true
 }) => {
   return (
-    <div className="flex flex-col md:flex-row bg-[#FFFDE3] p-4 gap-4 w-full max-w-[800px]">
-      <div className="flex justify-center md:justify-start">
+    <div className="flex flex-col md:flex-row p-4 gap-4 w-full max-w-[800px]">
+      <div className="w-full max-w-[200px] aspect-square">
         <img
           src={imageSrc}
           alt={`Photo de profil de ${name}`}
-          className="w-[200px] h-[200px] object-cover rounded-[20px] border-2 border-black shadow-[4px_4px_0_#000000]"
+          className="w-full h-full object-cover rounded-[20px] border-2 border-black shadow-[4px_4px_0_#111111]"
         />
       </div>
       
-      <div className="flex-grow bg-white rounded-[16px] border-2 border-hive-black shadow-[4px_4px_0_#111111] p-4 relative min-h-[200px]">
+      <div className="flex-grow bg-white rounded-[16px] border-2 border-hive-black shadow-[4px_4px_0_#111111] p-4 relative min-h-[200px] w-full">
         <h2 className="font-piepie font-bold text-xl mb-2">{name}</h2>
         <p className="text-sm text-hive-black/60 mb-8">{bio}</p>
         

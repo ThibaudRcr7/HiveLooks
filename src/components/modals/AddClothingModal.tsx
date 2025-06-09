@@ -8,7 +8,7 @@ import { ClothingCategory } from '../../types/clothing';
 interface AddClothingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; category: ClothingCategory; imageUrl: string; userId: string }) => void;
+  onSubmit: (data: { name: string; category: ClothingCategory; imageUrl: string; userId: string; description: string }) => void;
 }
 
 const CLOTHING_CATEGORIES = [
@@ -30,6 +30,7 @@ const CLOTHING_CATEGORIES = [
 const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [user] = useAuthState(auth);
   const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
   const [category, setCategory] = React.useState(CLOTHING_CATEGORIES[0]);
   const [image, setImage] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
@@ -133,6 +134,7 @@ const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, on
           name,
           category,
           imageUrl,
+          description,
           userId: user.uid
         });
 
@@ -140,6 +142,7 @@ const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, on
         // Réinitialiser le formulaire
         setName('');
         setCategory(CLOTHING_CATEGORIES[0]);
+        setDescription('');
         setImage(null);
         setPreviewUrl(null);
       } catch (error) {
@@ -167,6 +170,16 @@ const AddClothingModal: React.FC<AddClothingModalProps> = ({ isOpen, onClose, on
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border-2 border-black focus:outline-none focus:border-pink-500"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold uppercase mb-2">Description:</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border-2 border-black focus:outline-none focus:border-pink-500 min-h-[100px]"
+                placeholder="Décrivez votre vêtement..."
               />
             </div>
 

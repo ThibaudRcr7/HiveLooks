@@ -79,7 +79,13 @@ const WardrobeItemModal: React.FC<WardrobeItemModalProps> = ({
             className="w-full max-h-[70vh] object-contain rounded-lg mb-4"
           />
           <h2 className="text-2xl font-piepie mb-2">{item.name}</h2>
-          <p className="text-hive-black/60">{item.category}</p>
+          <p className="text-hive-black/60 mb-4">{item.category}</p>
+          {item.description && (
+            <div className="mt-4">
+              <h3 className="text-sm font-bold text-hive-black/70 mb-1">Description</h3>
+              <p className="text-hive-black">{item.description}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

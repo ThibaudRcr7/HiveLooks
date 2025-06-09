@@ -23,5 +23,6 @@ export interface WardrobeItem {
   color?: string;
   brand?: string;
   size?: string;
+  description?: string;
   createdAt: Date;
 }

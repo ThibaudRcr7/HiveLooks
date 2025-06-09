@@ -25,22 +25,23 @@ const StepThreeAnimation: FC = () => {
       className="relative w-full h-[80vh] flex items-center justify-center overflow-hidden"
     >
       {/* Image centrale */}
-      <div className="relative z-10 w-full max-w-[500px] mx-auto pointer-events-none">
-        <img
-          src={heroImage}
-          alt="Illustration centrale"
-          className="w-full h-auto max-h-[350px] object-contain"
-        />
+      <div className="relative z-10 w-full max-w-[400px] mx-auto pointer-events-none">
+        <div className="aspect-[3/4] overflow-hidden rounded-3xl border-2 border-hive-black shadow-lg">
+          <img
+            src={heroImage}
+            alt="Illustration centrale"
+            className="w-full h-full object-cover"
+          />
+        </div>
       </div>
+
 
       {/* Bulle 1 – haut à droite */}
       <motion.div
-        className="absolute z-20 w-[200px] sm:w-[230px] md:w-[260px] translate-x-1/2 -translate-y-1/2"
+        className="absolute z-20 w-[200px] sm:w-[230px] md:w-[260px] translate-x-1/2 -translate-y-1/2 top-[15%] right-[5%] sm:right-[25%]"
         style={{
           y: yFirstBubble,
           opacity: opacityFirstBubble,
-          top: '25%',
-          right: '8%',
         }}
         transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.6 }}
       >
@@ -49,12 +50,10 @@ const StepThreeAnimation: FC = () => {
 
       {/* Bulle 2 – centre gauche */}
       <motion.div
-        className="absolute z-30 w-[200px] sm:w-[230px] md:w-[260px] -translate-x-1/2 -translate-y-1/2"
+        className="absolute z-30 w-[200px] sm:w-[230px] md:w-[260px] -translate-x-1/2 -translate-y-1/2 top-[50%] left-[1%] sm:left-[25%]"
         style={{
           y: ySecondBubble,
           opacity: opacitySecondBubble,
-          top: '50%',
-          left: '15%',
         }}
         transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.6 }}
       >
@@ -63,12 +62,10 @@ const StepThreeAnimation: FC = () => {
 
       {/* Bulle 3 – bas à droite */}
       <motion.div
-        className="absolute z-20 w-[200px] sm:w-[230px] md:w-[260px] translate-x-1/2 -translate-y-1/2"
+        className="absolute z-20 w-[200px] sm:w-[230px] md:w-[260px] translate-x-1/2 -translate-y-1/2 top-[75%] right-[10%] sm:right-[30%]"
         style={{
           y: yThirdBubble,
           opacity: opacityThirdBubble,
-          top: '72%',
-          right: '6%',
         }}
         transition={{ ease: [0.25, 0.1, 0.25, 1], duration: 0.6 }}
       >

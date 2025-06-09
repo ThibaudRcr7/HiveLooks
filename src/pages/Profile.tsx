@@ -24,7 +24,6 @@ const Profile: FC<ProfileProps> = ({ userId: propUserId }) => {
   const navigate = useNavigate();
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
-  const [showAccountInfo, setShowAccountInfo] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'wardrobe' | 'looks' | 'posts'>('looks');
   const [username, setUsername] = useState('');
   const [postsCount, setPostsCount] = useState(0);
@@ -147,15 +146,6 @@ const Profile: FC<ProfileProps> = ({ userId: propUserId }) => {
           showActions={isOwnProfile}
         />
 
-        {isOwnProfile && (
-          <button
-            onClick={() => setShowAccountInfo(!showAccountInfo)}
-            className="text-sm text-hive-black/50 hover:text-hive-black/80 transition-colors"
-          >
-            {showAccountInfo ? 'Masquer les informations du compte' : 'Afficher les informations du compte'}
-          </button>
-        )}
-
         {userProfile && isOwnProfile && (
           <EditProfileModal
             isOpen={isEditProfileModalOpen}
@@ -165,32 +155,8 @@ const Profile: FC<ProfileProps> = ({ userId: propUserId }) => {
           />
         )}
 
-        {showAccountInfo && isOwnProfile && (
-          <div className="w-[400px] bg-white shadow-md rounded-lg border-2 border-black shadow-[4px_4px_0_#000000] p-6 space-y-4">
-            <h3 className="font-satoshi font-bold text-xl">Informations du compte</h3>
-            <div>
-              <label className="block text-sm font-medium text-hive-black/60">ID Utilisateur</label>
-              <div className="mt-1 text-sm text-hive-black/70 bg-gray-50 p-2 rounded">{user?.uid}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-hive-black/60">Statut</label>
-              <div className="mt-1">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user?.emailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                  {user?.emailVerified ? 'Vérifié' : 'Non vérifié'}
-                </span>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-hive-black/60">Dernière connexion</label>
-              <div className="mt-1 text-sm text-hive-black/70 bg-gray-50 p-2 rounded">
-                {user?.metadata.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A'}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Onglets de navigation */}
-        <div className="w-full max-w-[600px] flex flex-col sm:flex-row gap-4">
+        <div className="grid grid-cols-3 gap-4 w-full max-w-[800px]">
           <button
             onClick={() => {
               setSelectedTab('wardrobe');

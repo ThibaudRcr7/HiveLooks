@@ -12,6 +12,10 @@ import Discover from './pages/Discover';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import PresentationPage from './pages/PresentationPage';
+import UIKitPage from './pages/UIKitPage';
+import CreditsPage from './pages/CreditsPage';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import './App.css';
 
 const App: FC = () => {
@@ -22,6 +26,21 @@ const App: FC = () => {
           <Toaster position="top-right" />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/presentation" element={
+              <ErrorBoundary>
+                <PresentationPage />
+              </ErrorBoundary>
+            } />
+            <Route path="/ui-kit" element={
+              <ErrorBoundary>
+                <UIKitPage />
+              </ErrorBoundary>
+            } />
+            <Route path="/credits" element={
+              <ErrorBoundary>
+                <CreditsPage />
+              </ErrorBoundary>
+            } />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/connexion" element={<Login />} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

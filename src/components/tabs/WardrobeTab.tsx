@@ -4,6 +4,7 @@ import AddClothingModal from '../modals/AddClothingModal';
 import WardrobeItemModal from '../modals/WardrobeItemModal';
 import EditWardrobeItemModal from '../modals/EditWardrobeItemModal';
 import { useWardrobe } from '../../hooks/useWardrobe';
+import ImageModal from '../ImageModal';
 
 interface WardrobeTabProps {
   isOwnProfile: boolean;
@@ -15,6 +16,7 @@ const WardrobeTab: React.FC<WardrobeTabProps> = ({ isOwnProfile, userId }) => {
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const { wardrobeItems, isLoading, error, addItem, deleteItem, updateItem } = useWardrobe({ targetUserId: userId });
 
   if (isLoading) {
@@ -60,7 +62,12 @@ const WardrobeTab: React.FC<WardrobeTabProps> = ({ isOwnProfile, userId }) => {
               <img 
                 src={item.imageUrl} 
                 alt={item.name}
-                className="w-full h-64 object-cover rounded-lg mb-4"
+                className="w-full h-64 object-cover rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedItem(item);
+                  setIsImageModalOpen(true);
+                }}
               />
               <h3 className="font-piepie text-lg">{item.name}</h3>
               <p className="text-sm text-hive-black/60">{item.category}</p>
@@ -107,6 +114,15 @@ const WardrobeTab: React.FC<WardrobeTabProps> = ({ isOwnProfile, userId }) => {
             />
           )}
         </>
+      )}
+
+      {isImageModalOpen && selectedItem && (
+        <ImageModal
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+          imageUrl={selectedItem.imageUrl}
+          alt={selectedItem.name}
+        />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import Header from '../Header';
+import Header from '../layout/Header';
 import Footer from '../Footer';
 import { useScrollToTop } from '../../hooks/useScrollToTop';
 

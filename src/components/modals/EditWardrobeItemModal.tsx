@@ -16,6 +16,7 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
 }) => {
   const [name, setName] = useState(item.name);
   const [category, setCategory] = useState<ClothingCategory>(item.category);
+  const [description, setDescription] = useState(item.description || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -28,6 +29,7 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
       await onSubmit(item.id!, {
         name,
         category,
+        description,
       });
       onClose();
     } catch (error) {
@@ -59,6 +61,19 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
           </div>
 
           <div>
+            <label htmlFor="description" className="block text-sm font-medium text-hive-black/70 mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border border-hive-black/30 rounded-md focus:outline-none focus:ring-2 focus:ring-hive-pink min-h-[100px]"
+              placeholder="Décrivez votre vêtement..."
+            />
+          </div>
+
+          <div>
             <label htmlFor="category" className="block text-sm font-medium text-hive-black/70 mb-1">
               Catégorie
             </label>
@@ -78,18 +93,18 @@ const EditWardrobeItemModal: React.FC<EditWardrobeItemModalProps> = ({
             </select>
           </div>
 
-          <div className="flex justify-end space-x-3 mt-6">
+          <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 bg-hive-pale text-hive-black font-bold rounded-lg border-2 border-hive-black hover:bg-hive-pale/80 transition-colors"
               disabled={isSubmitting}
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-hive-pink text-hive-black font-bold rounded-lg border-2 border-hive-black hover:bg-hive-pink/90 transition-colors disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}

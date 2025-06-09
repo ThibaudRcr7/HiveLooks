@@ -1,9 +1,11 @@
 import { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import HeaderLogo from '../../assets/images/logos/Header-logo.svg';
+import MagnifyingGlass from '../../assets/images/icons/magnifying-glass.svg';
+import PlusCircle from '../../assets/images/icons/plus-circle.svg';
+import UserCircle from '../../assets/images/icons/user-circle.svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { useScrollDirection } from '../../hooks/useScrollDirection';
-import Button from '../common/Button';
 
 const Header: FC = () => {
   const { currentUser } = useAuth();
@@ -35,18 +37,16 @@ const Header: FC = () => {
           >
             <img src={HeaderLogo} alt="Logo HiveLooks" className="w-full h-full p-2" />
           </Link>
-          <nav className="flex gap-6" aria-label="Navigation principale">
+          <nav className="flex">
             <Link 
               to="/presentation" 
-              className="text-hive-black hover:text-hive-black/80 transition-colors"
+              className={`text-sm sm:text-base font-bold transition-colors duration-200 ${
+                location.pathname === '/presentation' 
+                  ? 'text-hive-yellow' 
+                  : 'text-hive-black hover:text-hive-black/80'
+              }`}
             >
               Présentation
-            </Link>
-            <Link 
-              to="/a-propos" 
-              className="text-hive-black hover:text-hive-black/80 transition-colors"
-            >
-              À propos
             </Link>
           </nav>
         </div>
@@ -54,45 +54,33 @@ const Header: FC = () => {
         <div className="flex items-center gap-4">
           <Link 
             to="/discover" 
-            aria-label="Découvrir"
-            className="block p-2 bg-hive-orange rounded-lg border-[1px] border-[#111111] shadow-[0_3px_0_0_#111111] text-hive-black transition-all duration-200 hover:translate-y-[3px] hover:shadow-none"
+            className="block w-10 h-10 rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] transition-all duration-200 hover:translate-y-[3px] hover:shadow-none bg-hive-orange"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </Link>
-          <Link 
-            to="/creer-post" 
-            aria-label="Créer un post"
-            className="block p-2 bg-hive-pink rounded-lg border-[1px] border-[#111111] shadow-[0_3px_0_0_#111111] text-hive-black transition-all duration-200 hover:translate-y-[3px] hover:shadow-none"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
+            <img src={MagnifyingGlass} alt="Rechercher" className="w-full h-full p-2" />
           </Link>
           {currentUser ? (
-            <Link
-              to="/profile"
-              aria-label="Profil"
-              className="block p-2 bg-hive-purple rounded-lg border-[1px] border-[#111111] shadow-[0_3px_0_0_#111111] text-hive-black transition-all duration-200 hover:translate-y-[3px] hover:shadow-none relative"
-            >
-              <div 
-                className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-hive-black"
-                aria-label="Connecté"
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-              </svg>
-            </Link>
+            <>
+              <Link 
+                to="/creer-post" 
+                className="block w-10 h-10 rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] transition-all duration-200 hover:translate-y-[3px] hover:shadow-none bg-hive-pink"
+              >
+                <img src={PlusCircle} alt="Créer" className="w-full h-full p-2" />
+              </Link>
+              <Link 
+                to="/profile" 
+                className="block w-10 h-10 rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] transition-all duration-200 hover:translate-y-[3px] hover:shadow-none bg-hive-purple relative"
+              >
+                <img src={UserCircle} alt="Profil" className="w-full h-full p-2" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-hive-yellow rounded-full border border-hive-black"></span>
+              </Link>
+            </>
           ) : (
-            <Button
-              as={Link}
-              to="/connexion"
-              variant="primary"
-              size="md"
+            <Link 
+              to="/connexion" 
+              className="block w-10 h-10 rounded-lg border border-hive-black shadow-[0_3px_0_0_#111111] transition-all duration-200 hover:translate-y-[3px] hover:shadow-none bg-hive-purple"
             >
-              Se connecter
-            </Button>
+              <img src={UserCircle} alt="Connexion" className="w-full h-full p-2" />
+            </Link>
           )}
         </div>
       </div>
